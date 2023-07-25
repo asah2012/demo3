@@ -38,15 +38,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    //List<GroceryItem> gcList = groceryItemList;
-
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.title , style: Theme.of(context).textTheme.titleLarge,),
-      actions: [IconButton(onPressed:(){
-        print("Button Pressed");
-        navigateToAddItem();
-        } , icon: const Icon(Icons.add))]),
-      body: Container(
+    
+    Widget content = const Center(child : Text("No items added yet."));
+    if(gcList.isNotEmpty){
+        content = Container(
          margin: const EdgeInsets.all(10),
         child: ListView.builder(
           itemCount: gcList.length,
@@ -54,14 +49,31 @@ class _MyHomePageState extends State<MyHomePage> {
               GroceryItem? groceryItem = gcList[index];
               //GroceryItem(id: 'X', name: "No Name", quantity: 0, category: new Category('Default', Color.fromARGB(0,0,0,0)))
               Category? categoryObject = groceryItem.category;
-              return ListTile(leading: Container(
-                height:  25,
-                width: 25,
-                color: categoryObject?.categoryColor,
-              ),title: Text(groceryItem.name??'No Name'), trailing: Text((groceryItem.quantity??0).toString()),);
+              return Dismissible(
+                key: ValueKey(gcList[index].id),
+                onDismissed: (direction) {
+                  setState(() {
+                    gcList.removeWhere((item) => item.id == gcList[index].id);
+                  });
+                },
+                child: ListTile(leading: Container(
+                  height:  25,
+                  width: 25,
+                  color: categoryObject?.categoryColor,
+                ),title: Text(groceryItem.name??'No Name'), trailing: Text((groceryItem.quantity??0).toString()),),
+              );
               //const Padding(padding: EdgeInsets.only(bottom: 10),);
           })
-      ),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: Text(widget.title , style: Theme.of(context).textTheme.titleLarge,),
+      actions: [IconButton(onPressed:(){
+        print("Button Pressed");
+        navigateToAddItem();
+        } , icon: const Icon(Icons.add))]),
+      body: content,
     );
   }
 }
