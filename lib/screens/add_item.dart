@@ -100,38 +100,19 @@ class _AddItemState extends State<AddItem> {
                   const Padding(
                     padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
                   ),
-                  //Padding(
-                    //  padding: const EdgeInsets.fromLTRB(20, 20, 10, 5),
-                      //child: 
-                      // SizedBox(
-                      //   width: 200,
-                      //   child: DropdownButton2(
-                      //         hint: Text(
-                      //             'Select Item',
-                      //             style: TextStyle(
-                      //               fontSize: 14,
-                      //               color: Theme
-                      //                   .of(context)
-                      //                   .hintColor,
-                      //             ),
-                      //          ),
-                      //         items: ddList,
-                      
-                      //             value: _selectedValue,
-                      //             onChanged: (value) {
-                      //               setState(() {
-                      //                 _selectedValue = value;
-                      //                 selectedCategoryName = (value as Category).categoryName;
-                      //               });
-                      //             },
-                      //             buttonHeight: 40,
-                      //             buttonWidth: 180,
-                      //             itemHeight: 40,
-                      //   ),
-                      // )
-                      //        )
-
+                  SizedBox(
+                    width: 200,
+                    child: DropdownButtonFormField(items: ddList, 
+                          onChanged: (value) {
+                                      setState(() {
+                                        _selectedValue = value;
+                                        selectedCategoryName = (value as Category).categoryName;
+                                      });
+                                    },
+                    ),
+                  ),
                 ]),
+                SizedBox(height: 30,),
                 TextFormField(
                   controller: TextEditingController(text: (selectedCategoryName)),
                   readOnly: true,
