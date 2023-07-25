@@ -18,15 +18,28 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  void navigateToAddItem(){
+    List<GroceryItem> gcList = [];
+  void navigateToAddItem() async {
     print("navigateToAddItem");
-    Navigator.pushNamed(
-      context, AddItem.routeName);
+
+    final newGroceryItem = await Navigator.of(context).push<GroceryItem>(
+      MaterialPageRoute(
+        builder: (ctx)=> const AddItem(),
+        )
+        );
+      if(newGroceryItem == null){
+        return;
+      }
+      setState(() {
+              gcList.add(newGroceryItem);
+      });
+
   }
 
   @override
   Widget build(BuildContext context) {
-    List<GroceryItem> gcList = groceryItemList;
+    //List<GroceryItem> gcList = groceryItemList;
+
     return Scaffold(
       appBar: AppBar(title: Text(widget.title , style: Theme.of(context).textTheme.titleLarge,),
       actions: [IconButton(onPressed:(){

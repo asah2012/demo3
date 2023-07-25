@@ -1,5 +1,5 @@
 import 'package:demo3/model/categories.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:demo3/model/grocery.dart';
 import 'package:flutter/material.dart';
 import '../data/categories_data.dart';
 import '../model/categories.dart';
@@ -15,24 +15,26 @@ class AddItem extends StatefulWidget {
 class _AddItemState extends State<AddItem> {
 
   final _formKey = GlobalKey<FormState>();
+  var selectedName = "Item1";
+  var selectedQuantity = 1;
+  var selectedCategory = categories_list[Categories.vegetables]!;
+
   void _saveItem(){
     print("Save Item called");
-    _formKey.currentState!.validate();
+    if(_formKey.currentState!.validate()){
+    _formKey.currentState!.save();
+    Navigator.of(context).pop(GroceryItem(id: DateTime.now().toString(), name: selectedName, quantity: selectedQuantity, category: selectedCategory));
+    }
+
   }
-  var _selectedValue;
+
+  void _resetForm(){
+    _formKey.currentState!.reset();
+  }
+
   String selectedCategoryName = "No Category";
   @override
   Widget build(BuildContext context) {
-    //String _selectedValue;
-
-    //List<String> _categoryList = ['veg','dairy','grocery'];
-
-    //List<Map<String,Object>> _ddList = [];
-    // for(var category in categories_list.entries){
-    //   Map<String,Object> tempMap = {category.value.categoryName :Text(category.value.categoryName)};
-    //   _ddList.add(tempMap);
-    // }
-
     List<DropdownMenuItem<Object>> ddList = [];
     for (var category in categories_list.entries) {
       ddList.add(DropdownMenuItem(
@@ -69,6 +71,7 @@ class _AddItemState extends State<AddItem> {
             child: Column(
               children: [
                 TextFormField(
+                  initialValue: selectedName,
                   decoration: const InputDecoration(label: Text("Item Name")),
                   maxLength: 50,
                   validator: (value) {
@@ -77,23 +80,33 @@ class _AddItemState extends State<AddItem> {
                     }
                     return null;
                   },
+                  onSaved: (newValue) {
+                    
+                      selectedName = newValue!;
+                    
+                  },
                 ),
                 Row(mainAxisAlignment: MainAxisAlignment.start, 
                 children: [
                   SizedBox(
                     width: 50,
                     child: TextFormField(
+                      initialValue: selectedQuantity.toString(),
                       decoration: const InputDecoration(
                         label: Text("Quantity"),
                       ),
                       keyboardType: TextInputType.number,
-                      initialValue: '1',
                       validator: (value){
                         if(value == null || value.isEmpty || int.tryParse(value) == null || int.tryParse(value)! < 1){
                         return "Enter a valid quantity";
                         }
                         return null;
 
+                      },
+                      onSaved: (newValue) {
+                       
+                          selectedQuantity = int.parse(newValue!);
+                       
                       },
                     ),
                   ),
@@ -102,17 +115,19 @@ class _AddItemState extends State<AddItem> {
                   ),
                   SizedBox(
                     width: 200,
-                    child: DropdownButtonFormField(items: ddList, 
-                          onChanged: (value) {
+                    child: DropdownButtonFormField(
+                        value: selectedCategory,
+                        items: ddList, 
+                          onChanged: (newValue) {
                                       setState(() {
-                                        _selectedValue = value;
-                                        selectedCategoryName = (value as Category).categoryName;
+                                        selectedCategory = newValue as Category;
+                                        selectedCategoryName = newValue.categoryName;
                                       });
                                     },
                     ),
                   ),
                 ]),
-                SizedBox(height: 30,),
+                const SizedBox(height: 30,),
                 TextFormField(
                   controller: TextEditingController(text: (selectedCategoryName)),
                   readOnly: true,
@@ -124,7 +139,9 @@ class _AddItemState extends State<AddItem> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    TextButton(onPressed: (){}, child: const Text("Reset")),
+                    TextButton(onPressed: (){
+                      _resetForm();
+                    }, child: const Text("Reset")),
                     ElevatedButton(onPressed: (){
                       print("Save button pressed");
                       _saveItem();
